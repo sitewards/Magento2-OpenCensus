@@ -22,12 +22,12 @@ class OpenCensus implements DriverInterface
     private $config;
 
     /**
-     * @var array
+     * @var \OpenCensus\Trace\Span[]|array
      */
     private $spans = [];
 
     /**
-     * @var array
+     * @var \OpenCensus\Core\Scope[]|array
      */
     private $scopes = [];
 
@@ -55,12 +55,22 @@ class OpenCensus implements DriverInterface
 
     public function clear($timerId = null)
     {
-        unset($this->scopes[$timerId]);
+        if ($timerId) {
+            unset($this->scopes[$timerId]);
+        } else {
+            $this->scopes = [];
+        }
     }
 
-    public function start($timerId, array $tags = null)
+    public function start($timerId, array $attributes = null)
     {
-        $this->scopes[$timerId] = Tracer::withSpan($this->getSpan($timerId));
+        // Magento expects this to be null, rather than an array *even though* it is type hinted against an array.
+        // Accordingly, we coerce types here.
+        if (!is_array($attributes)) {
+            $attributes = [];
+        }
+
+        $this->scopes[$timerId] = Tracer::withSpan($this->getSpan($timerId, $attributes));
     }
 
     public function stop($timerId)
@@ -71,13 +81,14 @@ class OpenCensus implements DriverInterface
     /**
      * Given a timer ID, returns a configured span. If there is no span, creates one.
      *
-     * @param string $timerId
+     * @param string $timerId    The ID of the property that is being profiled
+     * @param array  $attributes An array of tags associated with this property.
      * @return Span
      */
-    private function getSpan($timerId)
+    private function getSpan($timerId, array $attributes = [])
     {
         if (!isset($this->spans[$timerId])) {
-            $this->spans[$timerId] = Tracer::startSpan(['name' => $timerId]);
+            $this->spans[$timerId] = Tracer::startSpan(['name' => $timerId, 'attributes' => $attributes]);
         }
 
         return $this->spans[$timerId];
