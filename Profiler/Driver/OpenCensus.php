@@ -40,19 +40,15 @@ class OpenCensus implements DriverInterface
      */
     public function __construct(array $config = null)
     {
-        // Todo: This should be a function
-        $applicationName = isset($config['application_name'])
-            ? $config['application_name']
-            : self::DEFAULT_APPLICATION_NAME;
-
-
         // Starts the application. Seems to be in a static process -- not sure what to do about this, but i guess it
         // needs to be global to determine state (i.e. one thing is calling within another).
         //
         // Sets up a registry or? Somethingi happens here.
         //
         // Given that this class is a global, it might be possibile to use this non-statically.
-        Tracer::start(new ZipkinExporter('magento2', 'http://dockercompose_jaeger-collector_1:9411/api/v2/spans'));
+
+        // Todo: This is now definitely direct object injection. lol. Need to check this somehow.
+        Tracer::start(new $config['exporter']['type'](...$config['exporter']['args']));
 
         $this->config = $config;
     }

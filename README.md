@@ -52,11 +52,47 @@ index e77c6d432c8..b3f2c71f0f8 100644
 See https://github.com/magento/magento2/pull/15171 for details. More generally, this allows injecting complex
 configuration to the bootstrap process. It might not be 100% secure -- use with caution.
 
-However, once the patch above is applied, the following configuration should enable the profiler:
+Once the patch above is applied, it's possible to configure the profiler.
+
+### Configuration
+
+The `$profilerConfig` array expects something along the following lines:
+
+```php
+    $profilerConfig = [
+        'drivers' => [
+                [
+
+                // The type of profiling driver that will be run
+                'type' => 'Sitewards\OpenCensus\Profiler\Driver\OpenCensus',
+
+                // driver specific configuration configuration
+                'exporter' => [
+
+                    // The type of exporter that will be loaded
+                    'type' => '\OpenCensus\Trace\Exporter\ZipkinExporter',
+
+                    // An *ORDERED ARRAY* of arguments that will be unpacked with the `...` into the exporter
+                    // constructor
+                    'args' => [
+                        'magento2',
+                        'http://jaeger-host:9411/api/v2/spans'
+                    ]
+                ]
+            ]
+        ]
+    ];
+```
+
+Expressed as JSON, this looks something like:
 
 ```json
-{"drivers":{"type":"Sitewards\\OpenCensus\\Profiler\\Driver\\OpenCensus"}}
+{"drivers":[{"type":"Sitewards\\OpenCensus\\Profiler\\Driver\\OpenCensus","exporter":{"type":"\\OpenCensus\\Trace\\Exporter\\ZipkinExporter","args":["magento2","http:\/\/jaeger-host:9411\/api\/v2\/spans"]}}]}
 ```
+
+This will configure the Zipkin exporter to a Jaeger host. Due to a particular quirk associated with how UDP is handled
+(specifically, max packet size being too large) this seems the most reliable configuration with the nicest UI.
+
 ## Usage:
 
 Probably don't. It's still very experimental.
