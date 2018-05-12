@@ -1,0 +1,49 @@
+{
+    "name": "sitewards/magento2-opencensus",
+    "description": "An implementation of the OpenCensus tooling for Magento 2",
+    "type": "magento2-module",
+    "homepage": "https://github.com/sitewards/Magento2-OpenCensus.git",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Andrew",
+            "email": "andrew.howden@sitewards.com",
+            "homepage": "https://www.sitewards.com/",
+            "role": "Software Engineer"
+        }
+    ],
+    "support": {
+        "email": "andrew.howden@sitewards.com",
+        "issues": "https://github.com/sitewards/Magento2-OpenCensus.git/issues",
+        "wiki": "https://github.com/sitewards/Magento2-OpenCensus.git/wiki",
+        "source": "https://github.com/sitewards/Magento2-OpenCensus.git"
+    },
+    "require": {
+        "php": ">=7.0"
+    },
+    "require-dev": {
+    },
+    "suggest": {
+    },
+    "conflict": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Sitewards\\": "src/"
+        }
+    },
+    "archive": {
+        "exclude": [
+            "test",
+            "hack",
+            "hooks",
+            ".arclint"
+        ]
+    },
+    "config": {
+        "sort-packages":       true,
+        "apcu-autoloader":     true,
+        "notify-on-install":   false
+    },
+    "minimum-stability": "stable"
+}
